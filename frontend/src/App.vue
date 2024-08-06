@@ -19,7 +19,7 @@
           <RouterLink to="/details" class="routes">Activities</RouterLink>
         </v-list-item>
         <v-list-item>
-          <RouterLink to="/login" class="routes" v-if="logged">Login</RouterLink>
+          <RouterLink to="/login" class="routes" v-if="!logged">Login</RouterLink>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
