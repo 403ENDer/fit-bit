@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app v-if="logged">
     <v-main>
       <v-container class="dashboard">
         <h1>Welcome {{ username }}!!</h1>
@@ -83,11 +83,15 @@
       </v-container>
     </v-main>
   </v-app>
+  <div v-else>
+    <LoginAlert />
+  </div>
 </template>
 
 <script setup>
 import axiosObj from '@/axios'
 import { onMounted, ref } from 'vue'
+import LoginAlert from '@/components/LoginAlert.vue'
 
 const userEmail = ref()
 const userdata = ref()
@@ -103,7 +107,8 @@ const data = ref(),
   target = ref(),
   isAddbtnShow = ref(false),
   isShowDialog = ref(false),
-  targetInput = ref()
+  targetInput = ref(),
+  logged = ref()
 
 const fitnessQuotes = [
   'The only bad workout is the one that didn’t happen.',
@@ -122,6 +127,8 @@ const getRandomQuote = () => {
 }
 onMounted(async () => {
   userEmail.value = sessionStorage.getItem('email')
+  logged.value = sessionStorage.getItem('logged')
+  console.log(logged.value)
   const response = await axiosObj.get('/', {
     params: {
       email: userEmail.value
