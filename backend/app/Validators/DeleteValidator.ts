@@ -1,17 +1,13 @@
 import { schema, CustomMessages, rules } from "@ioc:Adonis/Core/Validator";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 
-export default class LogValidator {
+export default class deleteValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    email: schema.string([
-      rules.regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
-    ]),
-    target: schema.number([rules.unsigned()]),
+    id: schema.number([rules.unsigned()]),
   });
   public messages: CustomMessages = {
     "id.unsigned": "Id must be a positive number",
-    "email.regex": "Not a valid email id",
   };
 }

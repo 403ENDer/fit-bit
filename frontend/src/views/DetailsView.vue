@@ -68,6 +68,7 @@
 import axiosObj from '@/axios'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import LogStore from '@/stores/LogDetail'
 
 const data = ref([])
 const start_date = ref('')
@@ -80,19 +81,19 @@ const activity_name = ref(''),
   date = ref(''),
   action = ref('Add')
 
-const router = useRoute()
+const storeObj = LogStore()
 
 onMounted(async () => {
   email.value = sessionStorage.getItem('email')
-  const response = await axiosObj.get('/', {
-    params: {
-      email: email.value
-    }
-  })
-  data.value = response.data.data
-  console.log(response.data.data)
+  const result = await storeObj.getData(email.value)
+  if (result.status) {
+    data.value = result.data
+  } else {
+    alert(result.data)
+  }
 })
 
+//Date based Search
 async function searchByDate() {
   const email = sessionStorage.getItem('email')
   const response = await axiosObj.get('/searchBydate', {
@@ -106,66 +107,62 @@ async function searchByDate() {
   data.value = response.data
   console.log(response)
 }
-function addData() {
-  action.value = 'add'
-  isShowDialog.value = true
-}
+
 function formatDate(timestamp) {
   const date = new Date(timestamp)
   return date.toLocaleDateString()
 }
 
+//Feature - Add data,Update data,Delete data
 async function addItem() {
   try {
     if (action.value === 'add') {
-      const response = await axiosObj.post('/postdata', {
-        email: email.value,
-        activity: activity_name.value,
-        calories_burn: calories_burn.value,
-        date: date.value
-      })
-      data.value.push({
-        activity: activity_name.value,
-        calories_burn: calories_burn.value,
-        date: date.value
-      })
+      const result = await storeObj.addData(
+        email.value,
+        activity_name.value,
+        calories_burn.value,
+        date.value
+      )
+      console.log(result)
+      if (result.status) {
+        alert('Data added successfully')
+        data.value = result.data
+      } else {
+        alert(result.data)
+      }
     } else if (action.value === 'update') {
-      const response = await axiosObj.put('/putdata', {
-        id: updateId.value,
-        email: email.value,
-        activity: activity_name.value,
-        calories_burn: calories_burn.value,
-        date: date.value
-      })
-
-      const index = data.value.findIndex((value) => value.id === updateId.value)
-      if (index !== -1) {
-        data.value[index] = {
-          id: updateId.value,
-          email: email.value,
-          activity: activity_name.value,
-          calories_burn: calories_burn.value,
-          date: date.value
-        }
+      const result = await storeObj.updateData(
+        updateId.value,
+        email.value,
+        activity_name.value,
+        calories_burn.value,
+        date.value
+      )
+      if (result.status) {
+        alert('Data updated successfully')
+        data.value = result.data
+      } else {
+        alert(result.data)
       }
     } else if (action.value === 'delete') {
-      const response = await axiosObj.delete('/deletedata', {
-        params: {
-          id: updateId.value
-        }
-      })
-      const index = data.value.findIndex((value) => value.id === updateId.value)
-      data.value.splice(index, 1)
+      const result = await storeObj.addData(updateId.value)
+      if (result.status) {
+        alert('Data deleted successfully')
+        data.value = result.data
+      } else {
+        alert(result.data)
+      }
     }
     isShowDialog.value = false
   } catch (err) {
     console.log(err)
-
     alert('Something went wrong')
   }
 }
-function hideDialog() {
-  isShowDialog.value = false
+
+function addData() {
+  action.value = 'add'
+  isShowDialog.value = true
 }
 
 function updateData(item) {
@@ -186,6 +183,10 @@ function deleteData(item) {
   calories_burn.value = item.calories_burn
   date.value = formatDate(item.created_at)
   isShowDialog.value = true
+}
+
+function hideDialog() {
+  isShowDialog.value = false
 }
 </script>
 

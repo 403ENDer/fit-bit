@@ -5,7 +5,7 @@
         <h1>Welcome {{ username }}!!</h1>
         <h2>{{ randomQuote }}</h2>
         <v-card class="target-card">
-          <v-card-title>Target</v-card-title>
+          <v-card-title>Target calories to burn</v-card-title>
           <button class="btn-add" v-if="isAddbtnShow" @click="showDialog">Add Target</button>
           <v-card-text>{{ target }}</v-card-text>
         </v-card>

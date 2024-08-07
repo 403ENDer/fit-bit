@@ -92,7 +92,7 @@ function handleSubmit() {
 
 <style scoped>
 .loginForm {
-  background-color: #000080;
+  background-color: #1f3b73;
   width: 300px;
   margin: 20px auto;
   padding: 20px;
@@ -130,7 +130,7 @@ function handleSubmit() {
   font-size: 18px;
   color: white;
   background-color: #19b108;
-  border: 1px solid #000080;
+  border: 1px solid #1f3b73;
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease;

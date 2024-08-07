@@ -5,6 +5,7 @@ export default class UserValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
+    id: schema.number([rules.unsigned()]),
     name: schema.string([rules.maxLength(20)]),
     email: schema.string([
       rules.regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),

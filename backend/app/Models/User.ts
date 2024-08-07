@@ -17,7 +17,7 @@ export default class User extends BaseModel {
   public age: number;
 
   @column()
-  public target: string;
+  public target: number;
 
   @hasMany(() => LogDetail, {
     foreignKey: "email",
