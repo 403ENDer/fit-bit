@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="isShowLogDialog" max-height="900" max-width="500" class="pa-4 color='primary'">
     <v-card>
-      <v-text class="text-center text-h4 pa-12">Please Login to Continue!!</v-text>
+      <v-text class="text-center text-h4 pa-12">{{ message }}</v-text>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
       <v-spacer></v-spacer>
@@ -17,9 +17,15 @@
 </template>
 <script setup>
 import router from '@/router'
-import { ref } from 'vue'
+import { ref, onBeforeUnmount, defineProps } from 'vue'
 
+const props = defineProps({
+  message: String
+})
+
+const message = props.message || 'Please Login to Continue!!'
 const isShowLogDialog = ref(true)
+
 function login() {
   isShowLogDialog.value = false
   router.push('/login')

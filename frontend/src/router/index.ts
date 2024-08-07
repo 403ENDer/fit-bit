@@ -3,8 +3,9 @@ import HomeView from '../views/HomeView.vue'
 import LoginForm from '@/components/LoginForm.vue'
 import RegisterForm from '@/components/RegisterForm.vue'
 import DetailsView from '@/views/DetailsView.vue'
+import LoginAlertView from '@/views/LoginAlertView.vue'
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes: [
     {
       path: '/',
@@ -25,6 +26,11 @@ const router = createRouter({
       path: '/details',
       name: 'details',
       component: DetailsView
+    },
+    {
+      path: '/loginAlert',
+      name: 'loginAlert',
+      component: LoginAlertView
     }
   ]
 })

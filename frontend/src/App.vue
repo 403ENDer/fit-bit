@@ -19,7 +19,7 @@
           <RouterLink to="/details" class="routes">Activities</RouterLink>
         </v-list-item>
         <v-list-item>
-          <RouterLink to="/login" class="routes" v-if="!logged">Login</RouterLink>
+          <RouterLink to="/loginAlert" class="routes">Logout</RouterLink>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -33,7 +33,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import LoginAlert from './components/LoginAlert.vue'
 
 const drawer = ref(false)
 const logged = ref(false)

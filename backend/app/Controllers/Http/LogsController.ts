@@ -19,13 +19,13 @@ export default class LogsController {
     try {
       console.log(request.input("activity"));
       const paylod = await request.validate(LogValidator);
-      const data1 = await LogDetail.create({
+      await LogDetail.create({
         email: paylod.email,
         activity: paylod.activity,
         calories_burn: paylod.calories_burn,
         createdAt: paylod.date,
       });
-      console.log(data1);
+      console.log("Lod data Added");
       const data = await LogDetail.findBy("email", paylod.email);
       console.log(data);
       response.json({
@@ -40,7 +40,6 @@ export default class LogsController {
 
   public async updateLog({ request, response }: HttpContextContract) {
     try {
-      console.log("hi");
       const id = request.input("id"),
         email = request.input("email"),
         activity = request.input("activity"),
@@ -56,7 +55,7 @@ export default class LogsController {
         }
       );
       const data = await LogDetail.findBy("email", email);
-      console.log(data);
+      console.log(`Log data with id ${id} was updated`);
       response.json({
         message: "Log added successfully",
         data: data,
@@ -98,6 +97,7 @@ export default class LogsController {
     try {
       const id = request.input("id");
       await LogDetail.query().where("id", id).delete();
+      console.log(`Log data with id ${id} was deleted`);
       response.json({
         message: "Log added successfully",
       });
