@@ -59,6 +59,7 @@ async function dataPush() {
     if (response.status === 200) {
       alert(`User name ${username.value} added successfully`)
       console.log(response.data)
+      sessionStorage.setItem('token', response.data.token.token)
       sessionStorage.setItem('logged', true)
       sessionStorage.setItem('email', emailId.value)
       route.push('/')

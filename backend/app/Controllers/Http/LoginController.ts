@@ -16,8 +16,7 @@ export default class UserRequestsController {
       }
 
       const user = await User.createUser(data);
-      const token = auth.use("api").login(user);
-      console.log(`${token}`);
+      const token = await auth.use("api").login(user);
       return response
         .status(200)
         .json({ message: "User created successfully", token: token });
