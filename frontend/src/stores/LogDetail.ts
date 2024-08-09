@@ -11,9 +11,8 @@ interface LogInt {
 const LogStore = defineStore('logstore', () => {
   const data = ref<LogInt[]>([])
 
-  const getData = async (email: any) => {
+  const getData = async (email: string) => {
     try {
-      console.log(email)
       const response = await axiosObj.get('/', {
         params: {
           email: email
@@ -27,7 +26,12 @@ const LogStore = defineStore('logstore', () => {
     }
   }
 
-  const addData = async (email: any, activity_name: string, calories_burn: number, date: Date) => {
+  const addData = async (
+    email: string,
+    activity_name: string,
+    calories_burn: number,
+    date: Date
+  ) => {
     try {
       const response = await axiosObj.post('/postdata', {
         email: email,
@@ -36,18 +40,18 @@ const LogStore = defineStore('logstore', () => {
         date: date
       })
       data.value = response.data.data
-      console.log(data.value)
       return { status: 1, data: data.value }
     } catch (err) {
       return { status: 0, data: err }
     }
   }
 
-  const deleteData = async (id: number) => {
+  const deleteData = async (id: number, email: string) => {
     try {
       const response = await axiosObj.delete('/deletedata', {
         params: {
-          id: id
+          id: id,
+          email: email
         }
       })
       const index = data.value.findIndex((value) => value.id === id)

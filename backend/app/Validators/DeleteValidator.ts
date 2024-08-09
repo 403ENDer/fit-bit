@@ -6,8 +6,11 @@ export default class deleteValidator {
 
   public schema = schema.create({
     id: schema.number([rules.unsigned()]),
+    email: schema.string(),
   });
   public messages: CustomMessages = {
+    "id.required": "Id should be mentioned",
+    "email.required": "Email should be required",
     "id.unsigned": "Id must be a positive number",
   };
 }

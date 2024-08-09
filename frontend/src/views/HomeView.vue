@@ -4,10 +4,33 @@
       <v-container class="dashboard">
         <h1>Welcome {{ username }}!!</h1>
         <h2>{{ randomQuote }}</h2>
+        <v-row> </v-row>
+        <!-- <v-card-text class="target-card1">
+          <v-sheet color="#0070ff">
+            <v-sparkline
+              :model-value="dataof15"
+              color="white"
+              height="30"
+              padding="24"
+              stroke-linecap="round"
+              smooth
+            >
+              <template v-slot:label>{{ dayof15 }}</template>
+            </v-sparkline>
+          </v-sheet>
+        </v-card-text> -->
         <v-card class="target-card">
-          <v-card-title>Target calories to burn</v-card-title>
+          <v-card-title>Target calories to burn:{{ target }} cl</v-card-title>
+          <v-progress-circular
+            :model-value="targetPercent"
+            :rotate="360"
+            :size="100"
+            :width="15"
+            color="white"
+          >
+            <template v-slot:default> {{ targetPercent }} % </template>
+          </v-progress-circular>
           <button class="btn-add" v-if="isAddbtnShow" @click="showDialog">Add Target</button>
-          <v-card-text>{{ target }}</v-card-text>
         </v-card>
 
         <v-dialog v-model="isShowDialog" max-width="600">
@@ -30,7 +53,7 @@
           <v-col cols="12" md="4">
             <v-card class="stat-card">
               <v-card-title>Average Calories Burned</v-card-title>
-              <v-card-text>{{ averageCalories }}</v-card-text>
+              <v-card-text>{{ averageCalories }} cal</v-card-text>
             </v-card>
           </v-col>
           <v-col cols="12" md="4">
@@ -43,7 +66,7 @@
           <v-col cols="12" md="4">
             <v-card class="stat-card">
               <v-card-title>Last 15 Days Calories Burned</v-card-title>
-              <v-card-text>{{ lastData }}</v-card-text>
+              <v-card-text>{{ lastData }} cal</v-card-text>
             </v-card>
           </v-col>
         </v-row>
@@ -52,7 +75,11 @@
           <v-col cols="12" md="4">
             <v-card class="stat-card">
               <v-card-title>Recent Calories Burned</v-card-title>
-              <v-card-text>{{ recentCaloriesBurn }}</v-card-text>
+              <v-card-text>{{ recentCaloriesBurn }} cal</v-card-text>
+            </v-card>
+            <v-card class="stat-card" style="margin-top: 20px">
+              <v-card-title>Recent Activity</v-card-title>
+              <v-card-text>{{ recentActivity }}</v-card-text>
             </v-card>
           </v-col>
           <v-col cols="12" md="8">
@@ -66,17 +93,10 @@
                   </tr>
                   <tr v-for="(value, key) in pivot_table" :key="key">
                     <td>{{ key }}</td>
-                    <td>{{ value }}</td>
+                    <td>{{ value }} cal</td>
                   </tr>
                 </table>
               </v-card-text>
-            </v-card>
-          </v-col>
-
-          <v-col cols="12" md="4">
-            <v-card class="stat-card1">
-              <v-card-title>Recent Activity</v-card-title>
-              <v-card-text>{{ recentActivity }}</v-card-text>
             </v-card>
           </v-col>
         </v-row>
@@ -90,7 +110,7 @@
 
 <script setup>
 import axiosObj from '@/axios'
-import { onMounted, ref } from 'vue'
+import { compile, computed, onMounted, ref } from 'vue'
 import LoginAlert from '@/components/LoginAlert.vue'
 
 const userEmail = ref()
@@ -108,8 +128,25 @@ const data = ref(),
   isAddbtnShow = ref(false),
   isShowDialog = ref(false),
   targetInput = ref(),
+  targetPercent = ref(),
+  last15DaysData = ref(),
   logged = ref()
 
+const dataof15 = computed(() => {
+  if (last15DaysData.value) {
+    return last15DaysData.value.map((item) => item.calories_burn)
+  } else {
+    return [230, 240, 239, 250, 290]
+  }
+})
+
+const dayof15 = computed(() => {
+  if (last15DaysData.value) {
+    return last15DaysData.value.map((item) => item.created_at)
+  } else {
+    return [230, 240, 239, 250, 290]
+  }
+})
 const fitnessQuotes = [
   'The only bad workout is the one that didn’t happen.',
   'Push yourself, because no one else is going to do it for you.',
@@ -128,14 +165,12 @@ const getRandomQuote = () => {
 onMounted(async () => {
   userEmail.value = sessionStorage.getItem('email')
   logged.value = sessionStorage.getItem('logged')
-  console.log(logged.value)
   const response = await axiosObj.get('/', {
     params: {
       email: userEmail.value
     }
   })
 
-  console.log(response.data.data)
   userdata.value = response.data.userData
   username.value = userdata.value.name
   randomQuote.value = getRandomQuote()
@@ -168,7 +203,7 @@ function kpicaculator(data) {
   let activityCounts = {}
   let maxCalories = 0
 
-  //Calculation of Average Calories
+  //Average Calories
   data.forEach((entry) => {
     totalCalories += entry.calories_burn
 
@@ -181,9 +216,9 @@ function kpicaculator(data) {
       maxCalories = entry.calories_burn
     }
   })
-  averageCalories.value = totalCalories / data.length
+  averageCalories.value = Math.round(totalCalories / data.length)
 
-  //Calulation of Favraoutie activity
+  //Fav Activity
   let maxActivity = ''
   let maxActivityCount = 0
   for (const [activity, count] of Object.entries(activityCounts)) {
@@ -205,8 +240,11 @@ function kpicaculator(data) {
   const now = new Date()
   const date = new Date(now)
   date.setDate(date.getDate() - 15)
-  const last15DaysData = data.filter((entry) => new Date(entry.created_at) >= date)
-  lastData.value = last15DaysData.reduce((sum, entry) => sum + entry.calories_burn, 0)
+  last15DaysData.value = data.filter((entry) => new Date(entry.created_at) >= date)
+  lastData.value = last15DaysData.value.reduce((sum, entry) => sum + entry.calories_burn, 0)
+  if (target.value) {
+    targetPercent.value = parseFloat(((lastData.value / target.value) * 100).toFixed(2))
+  }
 
   if (data.length > 0) {
     const recentEntry = data[data.length - 1]
@@ -218,6 +256,7 @@ function kpicaculator(data) {
 
 <style scoped>
 .dashboard {
+  margin-top: 30px;
   background-color: #f5f5f5;
   padding: 20px;
   border-radius: 10px;
@@ -237,8 +276,19 @@ h2 {
 .target-card {
   text-align: center;
   padding: 20px;
-  width: 20%;
-  margin-left: 80%;
+  width: 21%;
+  margin-left: 79%;
+  margin-top: -100px;
+  margin-bottom: 50px;
+  background-color: #0070ff;
+  color: white;
+}
+
+.target-card1 {
+  text-align: center;
+  padding: 20px;
+  width: 21%;
+  margin-left: 59%;
   margin-top: -100px;
   margin-bottom: 50px;
   background-color: #0070ff;

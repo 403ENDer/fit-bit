@@ -5,7 +5,7 @@
       <h3 class="err-class" v-show="errShow">{{ err }}</h3>
       <div class="inputs">
         <h3 class="input-head">Email id</h3>
-        <input class="input-content" type="text" required v-model="emailId" />
+        <input class="input-content" type="email" required v-model="emailId" />
       </div>
       <div class="inputs">
         <h3 class="input-head">Password</h3>
@@ -47,7 +47,7 @@ async function checkpass() {
   } catch (error) {
     errShow.value = true
     err.value = 'Invalid username or password'
-    console.log(error)
+    console.error(error)
   }
 }
 </script>
@@ -89,7 +89,9 @@ async function checkpass() {
 .route-link {
   color: #19b108;
 }
-
+.route-link:hover {
+  color: #1aff00;
+}
 .btn-submit {
   padding: 15px;
   font-size: 18px;

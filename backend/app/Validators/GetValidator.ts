@@ -11,6 +11,7 @@ export default class GetValidator {
   });
 
   public messages: CustomMessages = {
+    "email.required": "Email should be required",
     "email.regex": "Not a valid email id",
   };
 }

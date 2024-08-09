@@ -1,6 +1,7 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import User from "App/Models/User";
 import UserValidator from "App/Validators/UserValidator";
+import LoginValidator from "App/Validators/LoginValidator";
 
 export default class UserRequestsController {
   public async createUser({ auth, response, request }: HttpContextContract) {
@@ -27,8 +28,8 @@ export default class UserRequestsController {
   }
 
   public async login({ auth, request, response }: HttpContextContract) {
-    const email = request.input("email");
-    const password = request.input("password");
+    const payload = await request.validate(LoginValidator);
+    const { email, password } = payload;
 
     try {
       const token = await auth.use("api").attempt(email, password);

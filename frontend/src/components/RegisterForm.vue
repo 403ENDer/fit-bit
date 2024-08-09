@@ -58,7 +58,6 @@ async function dataPush() {
     })
     if (response.status === 200) {
       alert(`User name ${username.value} added successfully`)
-      console.log(response.data)
       sessionStorage.setItem('token', response.data.token.token)
       sessionStorage.setItem('logged', true)
       sessionStorage.setItem('email', emailId.value)
@@ -66,12 +65,8 @@ async function dataPush() {
     }
   } catch (error) {
     errShow.value = true
-    if (error.response.status === 400) {
-      console.log('hi')
-      err.value = response.data.message
-    } else {
-      err.value = err.messages
-    }
+    err.value = error.response.data.message.messages.errors[0].message
+    console.error(error)
   }
 }
 
@@ -93,7 +88,7 @@ function handleSubmit() {
 <style scoped>
 .loginForm {
   background-color: #1f3b73;
-  width: 300px;
+  width: 30%;
   margin: 20px auto;
   padding: 20px;
   border: 1px solid #000000;
@@ -124,6 +119,9 @@ function handleSubmit() {
 }
 .route-link {
   color: #61db53;
+}
+.route-link:hover {
+  color: #1aff00;
 }
 .btn-submit {
   padding: 15px;

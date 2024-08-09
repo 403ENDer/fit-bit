@@ -11,7 +11,9 @@ export default class LogValidator {
     target: schema.number([rules.unsigned()]),
   });
   public messages: CustomMessages = {
-    "id.unsigned": "Id must be a positive number",
+    "email.required": "Email should be required",
+    "target.required": "Target is required",
+    "target.unsigned": "Target must be a positive number",
     "email.regex": "Not a valid email id",
   };
 }

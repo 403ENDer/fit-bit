@@ -37,7 +37,6 @@ import { RouterLink, RouterView } from 'vue-router'
 const drawer = ref(false)
 const logged = ref(false)
 const toggleDrawer = () => {
-  console.log('hi')
   drawer.value = !drawer.value
 }
 
