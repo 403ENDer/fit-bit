@@ -11,14 +11,16 @@ interface LogInt {
 const LogStore = defineStore('logstore', () => {
   const data = ref<LogInt[]>([])
 
-  const getData = async (email: string) => {
+  const getData = async (email: string, pageno: number) => {
     try {
       const response = await axiosObj.get('/', {
         params: {
-          email: email
+          email: email,
+          page: pageno
         }
       })
       data.value = response.data.data
+      console.log(response)
       return { status: 1, data: data.value }
     } catch (err) {
       console.log(err)
@@ -26,18 +28,13 @@ const LogStore = defineStore('logstore', () => {
     }
   }
 
-  const addData = async (
-    email: string,
-    activity_name: string,
-    calories_burn: number,
-    date: Date
-  ) => {
+  const addData = async (req: any) => {
     try {
       const response = await axiosObj.post('/postdata', {
-        email: email,
-        activity: activity_name,
-        calories_burn: calories_burn,
-        date: date
+        email: req.email,
+        activity: req.activity_name,
+        calories_burn: req.calories_burn,
+        created_at: req.date
       })
       data.value = response.data.data
       return { status: 1, data: data.value }
@@ -46,15 +43,15 @@ const LogStore = defineStore('logstore', () => {
     }
   }
 
-  const deleteData = async (id: number, email: string) => {
+  const deleteData = async (req: any) => {
     try {
       const response = await axiosObj.delete('/deletedata', {
         params: {
-          id: id,
-          email: email
+          id: req.id,
+          email: req.email
         }
       })
-      const index = data.value.findIndex((value) => value.id === id)
+      const index = data.value.findIndex((value) => value.id === req.id)
       data.value = response.data.data
       return { status: 1, data: data.value }
     } catch (err) {
@@ -62,20 +59,14 @@ const LogStore = defineStore('logstore', () => {
     }
   }
 
-  const updateData = async (
-    id: number,
-    email: any,
-    activity_name: string,
-    calories_burn: number,
-    date: Date
-  ) => {
+  const updateData = async (req: any) => {
     try {
       const response = await axiosObj.put('/putdata', {
-        id: id,
-        email: email,
-        activity: activity_name,
-        calories_burn: calories_burn,
-        date: date
+        id: req.id,
+        email: req.email,
+        activity: req.activity_name,
+        calories_burn: req.calories_burn,
+        created_at: req.created_at
       })
 
       data.value = response.data.data
@@ -85,12 +76,38 @@ const LogStore = defineStore('logstore', () => {
     }
   }
 
+  const updateAge = async (req: any) => {
+    try {
+      const response = await axiosObj.put('/ageUpdate', {
+        email: req.email,
+        age: req.age
+      })
+      return { status: 1, data: response }
+    } catch (err) {
+      return { status: 0, data: err }
+    }
+  }
+
+  const updatePass = async (req: any) => {
+    try {
+      const response = await axiosObj.put('/passUpdate', {
+        email: req.email,
+        oldPass: req.oldPass,
+        newPass: req.newPass
+      })
+      return { status: 1, data: response }
+    } catch (err) {
+      return { status: 0, data: err }
+    }
+  }
   return {
     data,
     addData,
     getData,
     updateData,
-    deleteData
+    deleteData,
+    updateAge,
+    updatePass
   }
 })
 

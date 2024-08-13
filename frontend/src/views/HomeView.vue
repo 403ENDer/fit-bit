@@ -2,71 +2,97 @@
   <v-app v-if="logged">
     <v-main>
       <v-container class="dashboard">
-        <h1>Welcome {{ username }}!!</h1>
-        <h2>{{ randomQuote }}</h2>
-        <v-row> </v-row>
-        <!-- <v-card-text class="target-card1">
-          <v-sheet color="#0070ff">
-            <v-sparkline
-              :model-value="dataof15"
-              color="white"
-              height="30"
-              padding="24"
-              stroke-linecap="round"
-              smooth
-            >
-              <template v-slot:label>{{ dayof15 }}</template>
-            </v-sparkline>
-          </v-sheet>
-        </v-card-text> -->
-        <v-card class="target-card">
-          <v-card-title>Target calories to burn:{{ target }} cl</v-card-title>
-          <v-progress-circular
-            :model-value="targetPercent"
-            :rotate="360"
-            :size="100"
-            :width="15"
-            color="white"
-          >
-            <template v-slot:default> {{ targetPercent }} % </template>
-          </v-progress-circular>
-          <button class="btn-add" v-if="isAddbtnShow" @click="showDialog">Add Target</button>
-        </v-card>
+        <v-row>
+          <v-col cols="10" md="5">
+            <h1>Welcome {{ username }}!!</h1>
+            <h2>{{ randomQuote }}</h2>
+          </v-col>
+          <v-col>
+            <v-card-text class="target-card1">
+              <v-sheet color="#000080" class="target-sheet">
+                <div class="text-h5 font-weight-strong">Progress of Last 15 days</div>
 
-        <v-dialog v-model="isShowDialog" max-width="600">
-          <v-card class="navy-card">
-            <v-card-title class="white--text">Target Value</v-card-title>
+                <v-row>
+                  <v-col cols="1">
+                    <div v-for="value in y_axis" :key="value">{{ value }} <br /></div>
+                  </v-col>
+                  <v-col cols="11">
+                    <v-sparkline
+                      :model-value="dataof15"
+                      color="white"
+                      padding="24"
+                      stroke-linecap="round"
+                      smooth
+                    >
+                    </v-sparkline>
+                  </v-col>
+                </v-row>
+                <v-card-text>
+                  <v-row class="justify-space-around">
+                    <v-col v-for="day in dayof15" :key="day" class="text-center">
+                      {{ day }}
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-sheet>
+            </v-card-text>
+          </v-col>
+          <v-col>
+            <v-card class="target-card">
+              <v-card-title>Target calories to burn:{{ target }} cl</v-card-title>
+              <v-progress-circular
+                :model-value="targetPercent"
+                style="margin-bottom: 20px"
+                :rotate="360"
+                :size="110"
+                :width="15"
+                color="white"
+              >
+                <template v-slot:default class="card-text"> {{ targetPercent }} % </template>
+              </v-progress-circular>
+              <button class="btn-add" v-if="isAddbtnShow" @click="showDialog">Add Target</button>
+            </v-card>
 
-            <v-text-field v-model="targetInput"></v-text-field>
-            <v-card-actions class="actions">
-              <v-spacer></v-spacer>
-              <v-btn color="danger" @click="hideDialog" class="action-button1--text" variant="flat"
-                >Cancel</v-btn
-              >
-              <v-btn color="primary" @click="addTarget" class="action-button2--text"
-                >Add Target</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+            <v-dialog v-model="isShowDialog" max-width="600">
+              <v-card class="navy-card">
+                <v-card-title class="white--text">Target Value</v-card-title>
+
+                <v-text-field v-model="targetInput"></v-text-field>
+                <v-card-actions class="actions">
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="danger"
+                    @click="hideDialog"
+                    class="action-button1--text"
+                    variant="flat"
+                    >Cancel</v-btn
+                  >
+                  <v-btn color="primary" @click="addTarget" class="action-button2--text"
+                    >Add Target</v-btn
+                  >
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-col>
+        </v-row>
         <v-row class="stats-row">
           <v-col cols="12" md="4">
             <v-card class="stat-card">
               <v-card-title>Average Calories Burned</v-card-title>
-              <v-card-text>{{ averageCalories }} cal</v-card-text>
+              <v-card-text class="card-text">{{ averageCalories }} cal</v-card-text>
             </v-card>
           </v-col>
           <v-col cols="12" md="4">
             <v-card class="stat-card">
               <v-card-title>Maximum Activity</v-card-title>
-              <v-card-text>{{ favactivity }}</v-card-text>
+              <v-card-text class="card-text">{{ favactivity }}</v-card-text>
             </v-card>
           </v-col>
 
           <v-col cols="12" md="4">
             <v-card class="stat-card">
               <v-card-title>Last 15 Days Calories Burned</v-card-title>
-              <v-card-text>{{ lastData }} cal</v-card-text>
+              <v-card-text class="card-text">{{ lastData }} cal</v-card-text>
             </v-card>
           </v-col>
         </v-row>
@@ -75,11 +101,11 @@
           <v-col cols="12" md="4">
             <v-card class="stat-card">
               <v-card-title>Recent Calories Burned</v-card-title>
-              <v-card-text>{{ recentCaloriesBurn }} cal</v-card-text>
+              <v-card-text class="card-text">{{ recentCaloriesBurn }} cal</v-card-text>
             </v-card>
             <v-card class="stat-card" style="margin-top: 20px">
               <v-card-title>Recent Activity</v-card-title>
-              <v-card-text>{{ recentActivity }}</v-card-text>
+              <v-card-text class="card-text">{{ recentActivity }}</v-card-text>
             </v-card>
           </v-col>
           <v-col cols="12" md="8">
@@ -130,10 +156,13 @@ const data = ref(),
   targetInput = ref(),
   targetPercent = ref(),
   last15DaysData = ref(),
-  logged = ref()
+  logged = ref(),
+  y_axis = ref([])
 
 const dataof15 = computed(() => {
   if (last15DaysData.value) {
+    const data = last15DaysData.value.map((item) => item.calories_burn)
+    y_axis.value = new Set(data.sort().reverse())
     return last15DaysData.value.map((item) => item.calories_burn)
   } else {
     return [230, 240, 239, 250, 290]
@@ -142,7 +171,7 @@ const dataof15 = computed(() => {
 
 const dayof15 = computed(() => {
   if (last15DaysData.value) {
-    return last15DaysData.value.map((item) => item.created_at)
+    return last15DaysData.value.map((item) => formatDateToDMY(item.created_at)).sort()
   } else {
     return [230, 240, 239, 250, 290]
   }
@@ -150,13 +179,18 @@ const dayof15 = computed(() => {
 const fitnessQuotes = [
   'The only bad workout is the one that didn’t happen.',
   'Push yourself, because no one else is going to do it for you.',
-  'Success starts with self-discipline.',
   'Motivation is what gets you started. Habit is what keeps you going.',
-  'Don’t limit your challenges. Challenge your limits.',
   'Your body can stand almost anything. It’s your mind that you have to convince.',
-  'Do something today that your future self will thank you for.',
-  'Train insane or remain the same.'
+  'Do something today that your future self will thank you for.'
 ]
+
+function formatDateToDMY(dateString) {
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+  return `${day}/${month}/${year}`
+}
 
 const getRandomQuote = () => {
   const randomIndex = Math.floor(Math.random() * fitnessQuotes.length)
@@ -167,10 +201,11 @@ onMounted(async () => {
   logged.value = sessionStorage.getItem('logged')
   const response = await axiosObj.get('/', {
     params: {
-      email: userEmail.value
+      email: userEmail.value,
+      page: 1
     }
   })
-
+  console.log(response)
   userdata.value = response.data.userData
   username.value = userdata.value.name
   randomQuote.value = getRandomQuote()
@@ -181,7 +216,7 @@ onMounted(async () => {
     target.value = userdata.value.target
     isAddbtnShow.value = false
   }
-  data.value = response.data.data
+  data.value = response.data.data.data
 
   kpicaculator(data.value)
 })
@@ -251,6 +286,7 @@ function kpicaculator(data) {
     recentCaloriesBurn.value = recentEntry.calories_burn
     recentActivity.value = recentEntry.activity
   }
+  console.log(last15DaysData.value)
 }
 </script>
 
@@ -273,28 +309,42 @@ h2 {
   padding: 20px;
 }
 
-.target-card {
-  text-align: center;
-  padding: 20px;
-  width: 21%;
-  margin-left: 79%;
-  margin-top: -100px;
-  margin-bottom: 50px;
-  background-color: #0070ff;
-  color: white;
-}
-
+.target-card,
 .target-card1 {
   text-align: center;
   padding: 20px;
-  width: 21%;
-  margin-left: 59%;
-  margin-top: -100px;
-  margin-bottom: 50px;
-  background-color: #0070ff;
+  height: fit-content;
+  width: fit-content;
+  background-color: navy;
   color: white;
+  box-shadow: 5px 6px 5px rgb(119, 116, 116);
+  border-radius: 10px;
+  font-weight: 900;
+  opacity: 0;
+  animation: fadeIn 0.6s both;
 }
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5%;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.target-card1 {
+  border-radius: 5px;
+}
+
+.target-card:hover,
+.target-card1:hover,
+.target-sheet:hover {
+  background-color: #0070ff;
+}
 .btn-add {
   background-color: rebeccapurple;
   padding: 10px;
@@ -309,16 +359,30 @@ h2 {
 .stat-card {
   text-align: center;
   padding: 20px;
-  background-color: #1f3b73;
+  background-color: navy;
+  border-radius: 10px;
   color: white;
+  box-shadow: 5px 6px 5px rgb(119, 116, 116);
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeIn 0.6s both;
 }
 
+.stat-card:hover {
+  background-color: #0070ff;
+}
+
+.card-text {
+  font-weight: 900;
+  font-size: 22px;
+}
 .stat-card1 {
   text-align: center;
   padding: 20px;
   margin-top: -35%;
-  background-color: #1f3b73;
+  background-color: nacy;
   color: white;
+  box-shadow: 5px 6px 5px rgb(119, 116, 116);
 }
 
 .pivot-card {
@@ -326,6 +390,12 @@ h2 {
   width: 100%;
   background-color: #0070ff;
   color: white;
+  box-shadow: 5px 6px 5px rgb(119, 116, 116);
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 20px;
+  opacity: 0;
+  animation: fadeIn 0.6s both;
 }
 
 .pivot-table {
@@ -339,18 +409,20 @@ h2 {
   text-align: center;
   padding: 10px;
   color: white;
+  font-weight: 600;
+  font-size: 20px;
 }
 
 .pivot-table th {
-  background-color: #1f3b73;
+  background-color: navy;
 }
 
 .pivot-table tr:nth-child(even) {
-  background-color: #1f3b73;
+  background-color: #0070ff;
 }
 
 .pivot-table tr:nth-child(odd) {
-  background-color: #0070ff;
+  background-color: navy;
 }
 
 .pivot-table tr:hover {

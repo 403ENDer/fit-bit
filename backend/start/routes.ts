@@ -10,5 +10,7 @@ Route.group(() => {
   Route.post("/postdata", "LogsController.postLog");
   Route.post("/addTarget", "LogsController.addTarget");
   Route.put("/putdata", "LogsController.updateLog");
+  Route.put("/ageUpdate", "UsersController.updateAge");
+  Route.put("/passUpdate", "UsersController.updatePass");
   Route.delete("/deletedata", "LogsController.deleteLog");
 }).middleware("Routeauth");

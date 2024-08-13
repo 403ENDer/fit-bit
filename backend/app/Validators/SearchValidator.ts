@@ -10,6 +10,7 @@ export default class searchValidator {
     ]),
     start: schema.date({}, [rules.beforeOrEqual("today")]),
     end: schema.date({}, [rules.beforeOrEqual("today")]),
+    page: schema.number(),
   });
   public messages: CustomMessages = {
     "email.required": "Email should be required",
@@ -18,5 +19,7 @@ export default class searchValidator {
     "email.regex": "Not a valid email id",
     "start.before": "Date should be before today",
     "end.before": "Date should be before today",
+    "page.number": "Page shoule be in Integer",
+    "page.required": "Page number is required",
   };
 }

@@ -12,10 +12,12 @@ export default class LogsController {
   public async getData({ request, response }: HttpContextContract) {
     try {
       const payload = await request.validate(GetValidator);
+      const limit = 6;
       const data = await LogDetail.query()
         .where("email", payload.email)
         .orderBy("created_at", "desc")
-        .orderBy("id", "desc");
+        .orderBy("id", "desc")
+        .paginate(payload.page, limit);
       const userData = await User.findBy("email", payload.email);
       response.status(200).json({ data: data, userData: userData });
     } catch (err) {
@@ -27,12 +29,7 @@ export default class LogsController {
   public async postLog({ request, response }: HttpContextContract) {
     try {
       const paylod = await request.validate(PostValidator);
-      await LogDetail.create({
-        email: paylod.email,
-        activity: paylod.activity,
-        calories_burn: paylod.calories_burn,
-        createdAt: paylod.date,
-      });
+      await LogDetail.create(paylod);
       console.log("Lod data Added");
       const data = await LogDetail.query()
         .where("email", paylod.email)
@@ -58,7 +55,7 @@ export default class LogsController {
         {
           activity: payload.activity,
           calories_burn: payload.calories_burn,
-          createdAt: payload.date,
+          createdAt: payload.created_at,
         }
       );
       const data = await LogDetail.query()
@@ -80,25 +77,30 @@ export default class LogsController {
       const payload = await request.validate(searchValidator);
       const start = payload.start ? payload.start.toISO() : null;
       const end = payload.end ? payload.end.toISO() : null;
+      const limit = 6;
       var resultSet;
       if (payload.start < payload.end) {
         if (start && end) {
           resultSet = await LogDetail.query()
             .where("email", payload.email)
             .andWhere("created_at", ">=", start)
-            .andWhere("created_at", "<=", end);
+            .andWhere("created_at", "<=", end)
+            .paginate(payload.page, limit);
         } else if (start) {
           resultSet = await LogDetail.query()
             .where("email", payload.email)
-            .andWhere("created_at", ">=", start);
+            .andWhere("created_at", ">=", start)
+            .paginate(payload.page, limit);
         } else if (end) {
           resultSet = await LogDetail.query()
             .where("email", payload.email)
-            .andWhere("created_at", "<=", end);
+            .andWhere("created_at", "<=", end)
+            .paginate(payload.page, limit);
         } else {
           resultSet = await LogDetail.query()
             .where("email", payload.email)
-            .orderBy("created_at", "desc");
+            .orderBy("created_at", "desc")
+            .paginate(payload.page, limit);
         }
         response.status(200).json(resultSet);
       } else {

@@ -1,25 +1,47 @@
 <template>
   <v-app>
-    <v-app-bar app style="background-color: #1f3b73; color: white">
+    <v-app-bar app style="background-color: navy; color: white">
       <v-app-bar-nav-icon @click="toggleDrawer" color="white" />
       <v-spacer />
-      <v-toolbar-title><h3>Fit Bit</h3></v-toolbar-title>
+      <v-spacer />
+      <v-spacer />
+      <v-spacer />
+      <v-spacer />
+
+      <v-toolbar-title
+        ><RouterLink to="/about"
+          ><h3 style="font-weight: 900; font-size: 32px; color: white">
+            <v-icon>mdi-dumbbell</v-icon>&nbsp;ZenFit
+          </h3></RouterLink
+        ></v-toolbar-title
+      >
+      <v-toolbar-title style="margin-left: 40%"
+        ><RouterLink to="/profile"
+          ><v-icon color="white">mdi-account-circle</v-icon></RouterLink
+        ></v-toolbar-title
+      >
     </v-app-bar>
     <v-navigation-drawer
       app
       v-model="drawer"
       :temporary="true"
-      style="background-color: #1f3b73; color: white"
+      style="background-color: navy; color: white"
     >
       <v-list>
         <v-list-item>
-          <RouterLink to="/" class="routes">Dash Board</RouterLink>
+          <RouterLink to="/" class="routes" style="font-weight: 900; font-size: 20px"
+            >Dash Board</RouterLink
+          >
         </v-list-item>
         <v-list-item>
-          <RouterLink to="/details" class="routes">Activities</RouterLink>
+          <RouterLink to="/details" class="routes" style="font-weight: 900; font-size: 20px"
+            >Activities</RouterLink
+          >
         </v-list-item>
         <v-list-item>
-          <RouterLink to="/loginAlert" class="routes">Logout</RouterLink>
+          <RouterLink to="/loginAlert" class="routes" style="font-weight: 900; font-size: 20px"
+            >Logout</RouterLink
+          >
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

@@ -1,7 +1,7 @@
 <template>
   <v-container v-if="logged">
     <div class="main-container">
-      <div class="history-head">
+      <div class="history-head" :class="['elevation-10 rounded-lg']">
         <h1>History of Logs</h1>
         <form @submit.prevent="searchByDate">
           <label class="date-head">Start Date: </label>
@@ -11,9 +11,16 @@
           <button type="submit" class="btn-submit"><v-icon>mdi-magnify</v-icon>Search</button>
         </form>
         <form>
-          <v-select :items="type_unique" v-model="type_val" class="text-field"></v-select>
+          <v-select
+            transition="scroll-y-reverse-transition"
+            :items="type_unique"
+            v-model="type_val"
+            class="text-field"
+          ></v-select>
         </form>
-        <button class="btn-get" @click="getData"><v-icon>mdi-refresh</v-icon>Refresh</button>
+        <button class="btn-get" @click="getData" elevation="5">
+          <v-icon>mdi-refresh</v-icon>Reset
+        </button>
         <button class="btn-add" @click="addData"><v-icon>mdi-bookmark-plus</v-icon>Add Log</button>
       </div>
       <div class="content">
@@ -42,7 +49,12 @@
             </v-card-text>
             <v-card-actions class="actions">
               <v-spacer></v-spacer>
-              <v-btn color="danger" @click="hideDialog" class="action-button1--text" variant="flat"
+              <v-btn
+                color="danger"
+                :class="['elevation-10']"
+                @click="hideDialog"
+                class="action-button1--text"
+                variant="flat"
                 >Cancel</v-btn
               >
               <v-btn color="primary" @click="addItem" class="action-button2--text"
@@ -51,22 +63,55 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <br />
-        <br />
+        <v-dialog v-model="isShowDeldialog" width="500">
+          <v-card class="navy-card">
+            <v-card-title>Are you sure you want to delte the data?</v-card-title>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <h1></h1>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
 
-        <div class="grid-container" v-if="filteredData.length !== 0">
-          <div v-for="item in filteredData" :key="item.id" class="activity-item">
-            <p>Activity Name: {{ item.activity }}</p>
-            <p>Calories Burned: {{ item.calories_burn }}</p>
-            <p>Date: {{ formatDateToDMY(item.created_at) }}</p>
-            <button class="btn-update" @click="updateData(item)">
-              <v-icon>mdi-pencil</v-icon>Update
-            </button>
-            <button class="btn-delte" @click="deleteData(item)">
-              <v-icon>mdi-delete</v-icon>Delete
-            </button>
-            <br />
+            <v-card-actions class="actions" max-width="600">
+              <v-spacer></v-spacer>
+              <v-btn color="danger" @click="hideDialog" class="action-button2--text" variant="flat"
+                >Cancel</v-btn
+              >
+              <v-btn color="primary" @click="addItem" class="action-button1--text" variant="flat"
+                >{{ action }} data</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <br />
+        <br />
+        <div class="items" v-if="filteredData.length !== 0">
+          <div class="grid-container">
+            <div
+              v-for="item in filteredData"
+              :key="item.id"
+              class="activity-item"
+              :class="['elevation-15 rounded-lg ']"
+            >
+              <div :class="['font-weight-medium']" div>
+                <p style="font-weight: 600">Activity Name: {{ item.activity }}</p>
+                <p style="font-weight: 600">Calories Burned: {{ item.calories_burn }}</p>
+                <p style="font-weight: 600">Date: {{ formatDateToDMY(item.created_at) }}</p>
+              </div>
+              <button class="btn-update" @click="updateData(item)">
+                <v-icon>mdi-pencil</v-icon>Update
+              </button>
+              <button class="btn-delte" @click="deleteData(item)">
+                <v-icon>mdi-delete</v-icon>Delete
+              </button>
+              <br />
+            </div>
           </div>
+          <v-pagination :length="len" v-model="page" style="margin-top: 10px"></v-pagination>
         </div>
         <div v-else>
           <h1>No data Found</h1>
@@ -81,7 +126,7 @@
 
 <script setup>
 import axiosObj from '@/axios'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import LogStore from '@/stores/LogDetail'
 import LoginAlert from '@/components/LoginAlert.vue'
 
@@ -99,16 +144,19 @@ const type_val = ref('Select Activity')
 const storeObj = LogStore()
 const logged = ref()
 const bg = ref()
+const isShowDeldialog = ref(false)
+const page = ref(1)
+const len = ref(0)
 
 onMounted(async () => {
   logged.value = sessionStorage.getItem('logged')
   email.value = sessionStorage.getItem('email')
-  const result = await storeObj.getData(email.value)
-  if (result.status) {
-    data.value = result.data
-  } else {
-    alert(result.data.response.data.error.messages.errors[0].message)
-  }
+  fetchData()
+})
+
+watch(page, (newVal) => {
+  console.log(newVal)
+  fetchData()
 })
 
 //Data Filtering based on type
@@ -131,6 +179,16 @@ const type_unique = computed(() => {
   }
 })
 
+async function fetchData() {
+  const result = await storeObj.getData(email.value, page.value)
+  if (result.status) {
+    data.value = result.data.data
+    len.value = result.data.meta.last_page
+  } else {
+    alert(result.data.response.data.error.messages.errors[0].message)
+  }
+}
+
 //Date based Search
 async function searchByDate() {
   const email = sessionStorage.getItem('email')
@@ -140,16 +198,18 @@ async function searchByDate() {
       params: {
         email: email,
         start: start_date.value,
-        end: endDate
+        end: endDate,
+        page: page.value
       }
     })
     if (response.data.length === 0) {
       data.value = ''
     } else {
-      data.value = response.data
+      data.value = response.data.data
+      len.value = response.data.meta.last_page
     }
   } catch (err) {
-    data.value = err.response.data.data
+    data.value = err.response.data.data.data
     if (err.response.status === 400) {
       alert(err.response.data.error)
     } else if (err.response.status === 401) {
@@ -160,12 +220,13 @@ async function searchByDate() {
 
 //Feature - Get data,Add data,Update data,Delete data
 async function getData() {
-  const result = await storeObj.getData(email.value)
+  const result = await storeObj.getData(email.value, 1)
   if (result.status) {
-    data.value = result.data
+    data.value = result.data.data
     type_val.value = 'Select Activity'
     start_date.value = ''
     end_date.value = ''
+    len.value = result.data.meta.last_page
   } else {
     alert(result.data.response.data.error.messages.errors[0].message)
   }
@@ -174,42 +235,44 @@ async function getData() {
 async function addItem() {
   try {
     if (action.value === 'add') {
-      const result = await storeObj.addData(
-        email.value,
-        activity_name.value,
-        calories_burn.value,
-        date.value
-      )
+      const result = await storeObj.addData({
+        email: email.value,
+        activity_name: activity_name.value,
+        calories_burn: calories_burn.value,
+        date: date.value
+      })
       if (result.status) {
         alert('Data added successfully')
         data.value = result.data
+        isShowDialog.value = false
       } else {
         alert(result.data.response.data.error.messages.errors[0].message)
       }
     } else if (action.value === 'update') {
-      const result = await storeObj.updateData(
-        updateId.value,
-        email.value,
-        activity_name.value,
-        calories_burn.value,
-        date.value
-      )
+      const result = await storeObj.updateData({
+        id: updateId.value,
+        email: email.value,
+        activity_name: activity_name.value,
+        calories_burn: calories_burn.value,
+        created_at: date.value
+      })
       if (result.status) {
         alert('Data updated successfully')
         data.value = result.data
+        isShowDialog.value = false
       } else {
         alert(result.data.response.data.error.messages.errors[0].message)
       }
     } else if (action.value === 'delete') {
-      const result = await storeObj.deleteData(updateId.value, email.value)
+      const result = await storeObj.deleteData({ id: updateId.value, email: email.value })
       if (result.status) {
         alert('Data deleted successfully')
         data.value = result.data
+        isShowDeldialog.value = false
       } else {
         alert(result.data.response.data.error.messages.errors[0].message)
       }
     }
-    isShowDialog.value = false
   } catch (err) {
     console.log(err)
     alert('Something went wrong')
@@ -244,7 +307,7 @@ function deleteData(item) {
   activity_name.value = item.activity
   calories_burn.value = item.calories_burn
   date.value = formatDateToYMD(item.created_at)
-  isShowDialog.value = true
+  isShowDeldialog.value = true
 }
 
 //Date Conversion
@@ -266,6 +329,7 @@ function formatDateToYMD(dateString) {
 
 //Dialog Handling
 function hideDialog() {
+  isShowDeldialog.value = false
   isShowDialog.value = false
 }
 </script>
@@ -275,7 +339,6 @@ h1,
 h2 {
   color: #1f3b73;
   margin-bottom: 20px;
-  /* color: rgb(246, 79, 79); */
 }
 .text-field {
   margin: 5px;
@@ -298,15 +361,39 @@ h2 {
 .grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: 0.9rem;
 }
 
 .activity-item {
   border: 1px solid #ddd;
   padding: 1rem;
   border-radius: 4px;
-  background: #1f3b73;
+  background: rgb(6, 6, 105);
   color: white;
+  font-size: 18px;
+  font-weight: bolder;
+  opacity: 0;
+  display: block;
+  animation: slideInTop 0.7s ease-out forwards;
+}
+
+@keyframes slideInTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.items {
+  margin-top: -1%;
+}
+
+.activity-item:hover {
+  background-color: #0070ff;
 }
 
 .date-head {
@@ -322,12 +409,14 @@ h2 {
 
 .btn-submit,
 .btn-add,
-.btn-get {
+.btn-get,
+.btn-update {
   background-color: rebeccapurple;
   padding: 10px;
   border: 1px solid black;
-  border-radius: 5px;
+  border-radius: 10px;
   color: white;
+  box-shadow: 4px 5px 5px rgb(119, 116, 116);
 }
 .btn-submit {
   margin-left: 15px;
@@ -342,20 +431,28 @@ h2 {
 
 .btn-update {
   margin-top: 5px;
-  background-color: rebeccapurple;
-  padding: 10px;
-  border: 1px solid black;
-  border-radius: 5px;
-  color: white;
+  box-shadow: 0px 0px 0px rgb(119, 116, 116);
 }
 
+.btn-submit:hover,
+.btn-add:hover,
+.btn-get:hover,
+.btn-update:hover {
+  background-color: rgb(135, 54, 216);
+  box-shadow: 4px 5px 5px rgb(119, 116, 116);
+}
+
+.btn-delte:hover {
+  box-shadow: 4px 5px 5px rgb(119, 116, 116);
+  background-color: rgb(254, 95, 116);
+}
 .btn-delte {
   margin-top: 5px;
   margin-left: 10px;
   background-color: rgb(214, 80, 98);
   padding: 10px;
   border: 1px solid black;
-  border-radius: 5px;
+  border-radius: 10px;
   color: white;
 }
 
@@ -373,7 +470,8 @@ h2 {
 }
 
 .action-button1--text {
-  color: red !important;
+  color: rgb(255, 255, 255) !important;
+  background-color: red !important;
 }
 
 .action-button2--text {

@@ -4,6 +4,8 @@ import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import DetailsView from '@/views/DetailsView.vue'
 import LoginAlertView from '@/views/LoginAlertView.vue'
+import AboutView from '@/views/AboutView.vue'
+import ProfileVue from '@/views/ProfileVue.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -32,6 +34,16 @@ const router = createRouter({
       path: '/loginAlert',
       name: 'loginAlert',
       component: LoginAlertView
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: AboutView
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileVue
     }
   ]
 })
