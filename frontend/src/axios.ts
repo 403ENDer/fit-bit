@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const token = localStorage.getItem('token')
+const token = sessionStorage.getItem('token')
 const axiosObj = axios.create({
   baseURL: import.meta.env.VITE_APP_URL,
   headers: {

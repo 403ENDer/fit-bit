@@ -40,10 +40,9 @@ async function checkpass() {
       }
     })
 
-    localStorage.setItem('token', response.data.token.token)
+    sessionStorage.setItem('token', response.data.token.token)
     sessionStorage.setItem('logged', true)
     sessionStorage.setItem('email', emailId.value)
-    console.log(localStorage.getItem('token'))
     router.push('/')
   } catch (error) {
     errShow.value = true

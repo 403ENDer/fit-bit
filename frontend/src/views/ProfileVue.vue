@@ -103,8 +103,6 @@ const reNewPass = ref()
 
 const store = new LogStore()
 onMounted(async () => {
-  const token = localStorage.getItem('token')
-  console.log(token)
   logged.value = sessionStorage.getItem('logged')
   email.value = sessionStorage.getItem('email')
   try {
